@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>STARFALL — Space Shooter</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================================
+         GAME APP
+    ========================================== -->
+    <div id="app">
+
+        <!-- =====================================
+             HOME SCREEN
+        ====================================== -->
+        <section id="homeScreen" class="screen active">
+
+            <div class="stars"></div>
+
+            <div class="home-content">
+
+                <div class="brand">
+                    <span class="brand-small">PROJECT</span>
+                    <h1>STARFALL</h1>
+                    <p>GALACTIC DEFENSE</p>
+                </div>
+
+                <div class="ship-preview">
+                    <div class="preview-glow"></div>
+                    <div class="preview-ship">🚀</div>
+                </div>
+
+                <div class="home-stats">
+                    <div>
+                        <span>HIGH SCORE</span>
+                        <strong id="homeHighScore">0</strong>
+                    </div>
+
+                    <div>
+                        <span>LEVEL</span>
+                        <strong id="homeLevel">1</strong>
+                    </div>
+                </div>
+
+                <div class="menu-buttons">
+
+                    <button id="startGameBtn" class="primary-btn">
+                        <span>▶</span>
+                        START MISSION
+                    </button>
+
+                    <button id="levelsBtn" class="menu-btn">
+                        <span>◆</span>
+                        MISSIONS
+                    </button>
+
+                    <button id="settingsBtn" class="menu-btn">
+                        <span>⚙</span>
+                        SETTINGS
+                    </button>
+
+                    <button id="howToPlayBtn" class="menu-btn">
+                        <span>?</span>
+                        HOW TO PLAY
+                    </button>
+                    <button id="exitGameBtn" class="danger-btn">
+                        ✕ &nbsp; EXIT GAME
+                    </button>
+
+                </div>
+
+                <p class="version">STARFALL v1.0 • OFFLINE ARCADE</p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             LEVELS SCREEN
+        ====================================== -->
+        <section id="levelsScreen" class="screen">
+
+            <div class="screen-header">
+
+                <button class="icon-btn" data-back="home">
+                    ←
+                </button>
+
+                <div>
+                    <span>MISSION SELECT</span>
+                    <h2>SECTOR MAP</h2>
+                </div>
+
+                <button id="levelsCloseBtn" class="icon-btn">
+                    ✕
+                </button>
+
+            </div>
+
+            <div class="mission-summary">
+
+                <div>
+                    <span>COMPLETED</span>
+                    <strong id="levelsCompleted">0</strong>
+                </div>
+
+                <div>
+                    <span>UNLOCKED</span>
+                    <strong id="levelsUnlocked">1</strong>
+                </div>
+
+            </div>
+
+            <div id="levelsGrid" class="levels-grid">
+                <!-- JavaScript generates missions -->
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             GAME SCREEN
+        ====================================== -->
+        <section id="gameScreen" class="screen game-screen">
+
+            <canvas id="gameCanvas"></canvas>
+
+            <!-- HUD -->
+            <div class="game-hud">
+
+                <div class="hud-left">
+
+                    <div class="hud-item">
+                        <span>MISSION</span>
+                        <strong id="gameLevel">01</strong>
+                    </div>
+
+                    <div class="hud-item">
+                        <span>SCORE</span>
+                        <strong id="gameScore">000000</strong>
+                    </div>
+
+                </div>
+
+                <div class="hud-center">
+
+                    <div class="boss-hud" id="bossHud">
+
+                        <div class="boss-title">
+                            <span>BOSS</span>
+                            <strong id="bossName">UNKNOWN</strong>
+                        </div>
+
+                        <div class="boss-bar">
+                            <div id="bossHealthBar"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="hud-right">
+
+                    <div class="health-display">
+
+                        <span>HULL</span>
+
+                        <div class="health-bar">
+                            <div id="healthBar"></div>
+                        </div>
+
+                        <strong id="healthValue">100</strong>
+
+                    </div>
+
+                    <button id="pauseBtn" class="pause-btn">
+                        ❚❚
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Bottom HUD -->
+            <div class="bottom-hud">
+
+                <div class="objective">
+
+                    <span>OBJECTIVE</span>
+
+                    <strong>
+                        DESTROY
+                        <span id="enemyCurrent">0</span>
+                        /
+                        <span id="enemyTarget">10</span>
+                    </strong>
+
+                </div>
+
+                <div class="power-status">
+
+                    <span>POWER</span>
+                    <strong id="powerValue">NORMAL</strong>
+
+                </div>
+
+                <div class="speed-status">
+
+                    <span>SPEED</span>
+                    <strong id="speedValue">100%</strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- Mobile Controls -->
+            <div id="mobileControls" class="mobile-controls">
+
+                <div class="movement-pad">
+
+                    <button data-direction="up">▲</button>
+
+                    <div class="horizontal-controls">
+                        <button data-direction="left">◀</button>
+                        <button data-direction="down">▼</button>
+                        <button data-direction="right">▶</button>
+                    </div>
+
+                </div>
+
+                <button id="fireBtn" class="fire-btn">
+                    FIRE
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             PAUSE MODAL
+        ====================================== -->
+        <div id="pauseModal" class="modal">
+
+            <div class="modal-box">
+
+                <span class="modal-label">MISSION PAUSED</span>
+
+                <h2>SYSTEM HALTED</h2>
+
+                <p>
+                    Your spacecraft is currently safe.
+                    Choose an action to continue.
+                </p>
+
+                <div class="modal-buttons">
+
+                    <button id="resumeBtn" class="primary-btn">
+                        ▶ RESUME
+                    </button>
+
+                    <button id="pauseRestartBtn" class="menu-btn">
+                        ↻ RESTART MISSION
+                    </button>
+
+                    <button id="pauseCancelBtn" class="danger-btn">
+                        ⌂ EXIT TO HOME
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             LEVEL COMPLETE MODAL
+        ====================================== -->
+        <div id="completeModal" class="modal">
+
+            <div class="modal-box success-box">
+
+                <div class="complete-icon">
+                    ✓
+                </div>
+
+                <span class="modal-label">
+                    MISSION COMPLETE
+                </span>
+
+                <h2>SECTOR CLEARED</h2>
+
+                <div class="result-grid">
+
+                    <div>
+                        <span>MISSION</span>
+                        <strong id="completedLevel">01</strong>
+                    </div>
+
+                    <div>
+                        <span>ENEMIES</span>
+                        <strong id="completedEnemy">10</strong>
+                    </div>
+
+                    <div>
+                        <span>SCORE</span>
+                        <strong id="completedScore">000000</strong>
+                    </div>
+
+                </div>
+
+                <div class="next-mission">
+
+                    <span>NEXT MISSION</span>
+
+                    <strong id="nextLevelNumber">
+                        MISSION 02
+                    </strong>
+
+                    <small id="nextLevelDifficulty">
+                        THREAT LEVEL: +10%
+                    </small>
+
+                </div>
+
+                <div class="modal-buttons">
+
+                    <button id="nextLevelBtn" class="primary-btn">
+                        NEXT MISSION →
+                    </button>
+
+                    <button id="completeLevelsBtn" class="menu-btn">
+                        MISSION SELECT
+                    </button>
+
+                    <button id="completeHomeBtn" class="menu-btn">
+                        HOME
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             GAME OVER MODAL
+        ====================================== -->
+        <div id="gameOverModal" class="modal">
+
+            <div class="modal-box danger-box">
+
+                <div class="dead-icon">
+                    ✕
+                </div>
+
+                <span class="modal-label">
+                    CRITICAL FAILURE
+                </span>
+
+                <h2>SHIP DESTROYED</h2>
+
+                <p>
+                    Your spacecraft was destroyed in combat.
+                </p>
+
+                <div class="result-grid">
+
+                    <div>
+                        <span>MISSION</span>
+                        <strong id="deadLevel">01</strong>
+                    </div>
+
+                    <div>
+                        <span>ENEMIES</span>
+                        <strong id="deadEnemy">0</strong>
+                    </div>
+
+                    <div>
+                        <span>SCORE</span>
+                        <strong id="deadScore">000000</strong>
+                    </div>
+
+                </div>
+
+                <div class="high-score-result">
+
+                    <span>HIGH SCORE</span>
+
+                    <strong id="deadHighScore">
+                        000000
+                    </strong>
+
+                </div>
+
+                <div class="modal-buttons">
+
+                    <button id="retryBtn" class="primary-btn">
+                        ↻ RETRY MISSION
+                    </button>
+
+                    <button id="gameOverLevelsBtn" class="menu-btn">
+                        MISSION SELECT
+                    </button>
+
+                    <button id="gameOverHomeBtn" class="menu-btn">
+                        HOME
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             SETTINGS SCREEN
+        ====================================== -->
+        <section id="settingsScreen" class="screen">
+
+            <div class="screen-header">
+
+                <button class="icon-btn" data-back="home">
+                    ←
+                </button>
+
+                <div>
+                    <span>SYSTEM</span>
+                    <h2>SETTINGS</h2>
+                </div>
+
+                <div></div>
+
+            </div>
+
+            <div class="settings-list">
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>Sound Effects</strong>
+                        <small>Weapons, explosions and alerts</small>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span></span>
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>Music</strong>
+                        <small>Background mission audio</small>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" id="musicToggle" checked>
+                        <span></span>
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>Vibration</strong>
+                        <small>Mobile combat feedback</small>
+                    </div>
+
+                    <label class="switch">
+                        <input type="checkbox" id="vibrationToggle" checked>
+                        <span></span>
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row select-row">
+
+                    <div>
+                        <strong>Control Sensitivity</strong>
+                        <small>Movement response</small>
+                    </div>
+
+                    <select id="sensitivitySelect">
+                        <option value="15">LOW</option>
+                        <option value="25" selected>NORMAL</option>
+                        <option value="40">HIGH</option>
+                    </select>
+
+                </div>
+
+
+                <div class="setting-row select-row">
+
+                    <div>
+                        <strong>Game Speed</strong>
+                        <small>Enemy movement speed</small>
+                    </div>
+
+                    <select id="speedSelect">
+                        <option value="300">SLOW</option>
+                        <option value="250">CASUAL</option>
+                        <option value="200" selected>NORMAL</option>
+                        <option value="150">FAST</option>
+                        <option value="100">HARD</option>
+                        <option value="75">EXTREME</option>
+                        <option value="50">INSANE</option>
+                    </select>
+
+                </div>
+
+
+                <div class="setting-row select-row">
+
+                    <div>
+                        <strong>Mission Target</strong>
+                        <small>Enemies required per mission</small>
+                    </div>
+
+                    <select id="enemyTargetSelect">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+
+                </div>
+
+
+                <button id="resetProgressBtn" class="reset-btn">
+                    ↻ RESET ALL PROGRESS
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             HOW TO PLAY
+        ====================================== -->
+        <section id="howToPlayScreen" class="screen">
+
+            <div class="screen-header">
+
+                <button class="icon-btn" data-back="home">
+                    ←
+                </button>
+
+                <div>
+                    <span>MISSION BRIEFING</span>
+                    <h2>HOW TO PLAY</h2>
+                </div>
+
+                <div></div>
+
+            </div>
+
+
+            <div class="instructions">
+
+                <article class="instruction-card">
+
+                    <div class="instruction-icon">
+                        🚀
+                    </div>
+
+                    <div>
+                        <h3>MOVE YOUR SHIP</h3>
+
+                        <p>
+                            Use WASD or Arrow Keys on desktop.
+                            On mobile, use the movement controls.
+                        </p>
+                    </div>
+
+                </article>
+
+
+                <article class="instruction-card">
+
+                    <div class="instruction-icon">
+                        🎯
+                    </div>
+
+                    <div>
+                        <h3>DESTROY ENEMIES</h3>
+
+                        <p>
+                            Shoot incoming enemy ships before
+                            they reach your position.
+                        </p>
+                    </div>
+
+                </article>
+
+
+                <article class="instruction-card">
+
+                    <div class="instruction-icon">
+                        ❤️
+                    </div>
+
+                    <div>
+                        <h3>PROTECT YOUR HULL</h3>
+
+                        <p>
+                            Avoid enemy bullets and collisions.
+                            If hull reaches zero, the mission ends.
+                        </p>
+                    </div>
+
+                </article>
+
+
+                <article class="instruction-card">
+
+                    <div class="instruction-icon">
+                        ⚡
+                    </div>
+
+                    <div>
+                        <h3>COLLECT POWER-UPS</h3>
+
+                        <p>
+                            Power-ups can increase fire rate,
+                            shield your ship or restore health.
+                        </p>
+                    </div>
+
+                </article>
+
+
+                <article class="instruction-card">
+
+                    <div class="instruction-icon">
+                        👹
+                    </div>
+
+                    <div>
+                        <h3>DEFEAT THE BOSS</h3>
+
+                        <p>
+                            Later missions introduce powerful
+                            bosses with unique attack patterns.
+                        </p>
+                    </div>
+
+                </article>
+
+
+                <article class="instruction-card">
+
+                    <div class="instruction-icon">
+                        🏆
+                    </div>
+
+                    <div>
+                        <h3>BUILD YOUR SCORE</h3>
+
+                        <p>
+                            Destroy enemies quickly, survive longer
+                            and beat your personal high score.
+                        </p>
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>
